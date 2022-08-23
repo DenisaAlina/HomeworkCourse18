@@ -1,5 +1,6 @@
 package org.fasttrackit.homeworkCourse18;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
@@ -9,16 +10,11 @@ import java.util.List;
 @RequestMapping("countries")
 public class Countries {
 
-    CountryService countryService = new CountryService(new CountryReader());
+    @Autowired
+    CountryService countryService;
 
     public Countries() throws IOException {
     }
-
-
-    // @GetMapping
-    // List<Country> listCountries(){
-    //   return countryService.listAllCountries();
-    //}
 
 
     @GetMapping("names")
@@ -41,9 +37,12 @@ public class Countries {
         return countryService.getCountryNeighbours(countryId);
     }
 
-    //compilation error for same annotation
     @GetMapping
-    List<Country> getCountryThatNeighbour(@RequestParam String includeNeighbour, @RequestParam String excludeNeighbour) {
-        return countryService.getCountriesThatNeighbour(includeNeighbour, excludeNeighbour);
+    List<Country> getCountryThatNeighbour(@RequestParam(required = false) String includeNeighbour, @RequestParam(required = false) String excludeNeighbour) {
+        if (includeNeighbour == null && excludeNeighbour == null) {
+            return countryService.listAllCountries();
+        } else {
+            return countryService.getCountriesThatNeighbour(includeNeighbour, excludeNeighbour);
+        }
     }
 }
